@@ -96,8 +96,7 @@ if __name__ == "__main__":
         UWriter.writelines(U)
         UWriter.close()
     # at least it worked
-    # testing git
-    # the probl
+
                     
     
                     
