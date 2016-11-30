@@ -18,7 +18,7 @@ def userGradientUpdate(RU, P, Uu, lambda1):
 # this function updates the ith row of item feature matrix P, for the vectorized gradient update
 def itemGradientUpdate(RI, U, Pi, lambda2):
     
-    RI_til = np.dot(Pi,U)*np.sign(RI)
+    RI_hat = np.dot(Pi,U)*np.sign(RI)
     grad = np.dot((RI_hat - RI),U) + lambda2*Pi
     return grad
 
@@ -27,10 +27,11 @@ def upUpdate(Uu,Pi,Rui,lambda1,lambda2):
     Rui_hat = np.dot(Uu,Pi.T)
     if abs(Rui_hat)>= 40:
         print "overshoot! There must be something wrong with the gradient updating!"
-    res = Rui_hat - Rui
-    Uu = res*Pi + lambda1*Uu
-    Pi = res*Uu + lambda2*Pi
-    return Uu,Pi,abs(res)
+    diff = Rui_hat - Rui
+    Uu = diff*Pi + lambda1*Uu
+    Pi = diff*Uu + lambda2*Pi
+    res = diff**2
+    return Uu,Pi,res
     
 def parallelUpdate(RUI,U,P,j,k,lambda1,lambda2,step,error,numRating,lock):
      if RUI[j][k] != 0:
