@@ -19,7 +19,7 @@ def userGradientUpdate(RU, P, Uu, lambda1):
 # this function updates the ith row of item feature matrix P, for the vectorized gradient update
 def itemGradientUpdate(RI, U, Pi, lambda2):
     
-    RI_til = np.dot(Pi,U)*np.sign(RI)
+    RI_hat = np.dot(Pi,U)*np.sign(RI)
     grad = np.dot((RI_hat - RI),U) + lambda2*Pi
     return grad
 
