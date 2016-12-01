@@ -47,15 +47,23 @@ def parallelUpdate(RUI,U,P,j,k,lambda1,lambda2,step,error,numRating,lock):
      if RUI[j][k] != 0:
          Rui_hat = np.dot(U[j,np.newaxis],P[k,np.newaxis].T)
          res = Rui_hat - RUI[j][k]
-         #lock.acquire()
+         lock.acquire()
          if abs(Rui_hat)>= 40:
              print "overshoot! There must be something wrong with the gradient updating!"
          Uu = res*P[k] + lambda1*U[j]
          Pi = res*U[j] + lambda2*P[k]
          U[j] = U[j] - step*Uu
          P[k] = P[k] - step*Pi
-         #lock.release()
-         
+         lock.release()
+
+def pUpdate(Ru,U,Pi,lambda2):
+    # assuming Ru is a row vector
+    Ru_hat = np.dot(Pi,U.T)
+    dPi = np.dot((Ru_hat*np.sign(Ru) - Ru),U)
+    Pi = dPi + lambda2 * Pi
+    return Pi
+    
+    
          
 
 
