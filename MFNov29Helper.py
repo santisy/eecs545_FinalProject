@@ -19,7 +19,7 @@ def userGradientUpdate(RU, P, Uu, lambda1):
 # this function updates the ith row of item feature matrix P, for the vectorized gradient update
 def itemGradientUpdate(RI, U, Pi, lambda2):
     
-    RI_hat = np.dot(Pi,U)*np.sign(RI)
+    RI_hat= np.dot(Pi,U)*np.sign(RI)
     grad = np.dot((RI_hat - RI),U) + lambda2*Pi
     return grad
 
@@ -27,7 +27,7 @@ def itemGradientUpdate(RI, U, Pi, lambda2):
 def upUpdate(Uu,Pi,Rui,lambda1,lambda2):
     Rui_hat = np.dot(Uu,Pi.T)
     if abs(Rui_hat)>= 40:
-        print "overshoot! There must be something wrong with the gradient updating!"
+        print("overshoot! There must be something wrong with the gradient updating!")
     res = Rui_hat - Rui
     Uu = res*Pi + lambda1*Uu
     Pi = res*Uu + lambda2*Pi
@@ -39,21 +39,22 @@ def parallelUpdate(RUI,U,P,j,k,lambda1,lambda2,step,error,numRating,lock):
          res = Rui_hat - RUI[j][k]
          #lock.acquire()
          if abs(Rui_hat)>= 40:
-             print "overshoot! There must be something wrong with the gradient updating!"
+             print("overshoot! There must be something wrong with the gradient updating!")
          Uu = res*P[k] + lambda1*U[j]
          Pi = res*U[j] + lambda2*P[k]
          U[j] = U[j] - step*Uu
          P[k] = P[k] - step*Pi
          #lock.release()
+
 def recordCSV(matrix, FID):
     try:
         with open(FID,'wb') as f:
             writer = csv.writer(f)
             writer.writerows(matrix)
             f.close()
-            print "written successful: FID ",FID
+            print("written successful:{}".format(FID))
     except:
-        print "cannot write file: FID ",FID
+        print ("cannot write file:{}".format(FID))
          
 
 

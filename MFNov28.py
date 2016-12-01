@@ -29,11 +29,11 @@ if __name__ == "__main__":
     iterNum = 2 # number of iterations
  
     # data file path, and read
-    categoryName = 'shopping'
-    dataPath = "F:\\EECS545Proj\\Yelp_Dataset\\test_" + categoryName + "-TBD\\test_by_distance\\"    
+    categoryName = 'Shopping'
+    dataPath = os.path.expanduser('~/Documents/Yelp_Dataset/test_') + categoryName + "-TMC/test_by_distance/"
     dataTerms = ['userID','itemID','subcategory','rating','time','userLocation','itemLocation','distance']
     now = datetime.datetime.now()        
-    resultPath = "F:\\EECS545Proj\\results\\" + str(now.strftime('%m%d%H%M')) + "\\"           
+    resultPath = os.path.expanduser('~/Documents/results/') + str(now.strftime('%m%d%H%M')) + '/'
     os.mkdir(resultPath)
     # read the raw data into pandas dataframe
     flag = 1
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     RUI = np.zeros([len(userList),len(itemList)], dtype = np.float16)
     for (idx,row) in trainContent.iterrows():
         RUI[userList.index(row['userID']),itemList.index(row['itemID'])] = np.float16(row['rating'])
-    print "RUI has been constructed!"
+    print("RUI has been constructed!")
     
     # U,P initialization
     U = np.random.randn(len(userList),featureDim)
@@ -84,9 +84,9 @@ if __name__ == "__main__":
                     P[k] = P[k] - step*Pi
                     error += res/numRating
         iterTime = time.time() - startTime
-        print "I have finished one iteration!"
-        print "the MAE for objective function is", error
-        print "take", str(iterTime), "seconds"
+        print("I have finished one iteration!")
+        print("the MAE for objective function is", error)
+        print("take", str(iterTime), "seconds")
         # save intermediate results
         recordCSV(P, resultPath + 'P%s.csv' %i) 
         recordCSV(U, resultPath + 'U%s.csv' %i)  
@@ -107,22 +107,22 @@ if __name__ == "__main__":
             MAE += abs(testRUI - RUI_hat)
         except:
             numInvalid += 1
-            print "invalid testing data detected!"
+            print("invalid testing data detected!")
             
         if count/1000 == 0:
-            print str((count/numTest)*100) + "%"
+            print(str((count/numTest)*100) + "%")
     MSE = np.sqrt(MSE/(numTest - numInvalid))
     MAE = MAE/(numTest - numInvalid)
     line1 = "Number of iterations: " + str(i)
     line2 = "MSE for testing data: " + str(MSE)
     line3 = "MAE for testing data: " + str(MAE)
-    print line1
-    print line2
-    print line3
+    print(line1)
+    print(line2)
+    print(line3)
     resultLogFID = resultPath + "log.txt"
-    f = open(resultLogFID, 'wb')
-    f.writelines([line1,'\n',line2,'\n',line3])
-    f.writelines(["feature demention: ",str(featureDim),'\n',"lambdaU: ",str(lambdaU),'\n',"lambdaP: ",str(lambdaP),'\n',"step: ",str(step)])
+    f = open(resultLogFID, 'w')
+    f.write([line1, '\n', line2, '\n', line3, '\n'])
+    f.write(["feature demention: ", str(featureDim), '\n', "lambdaU: ", str(lambdaU), '\n', "lambdaP: ", str(lambdaP), '\n', "step: ", str(step), '\n'])
     f.close()
         
         
@@ -131,9 +131,4 @@ if __name__ == "__main__":
     
     
         
-                    
-    
-                    
-                
-
 
