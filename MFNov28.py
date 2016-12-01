@@ -26,18 +26,18 @@ if __name__ == "__main__":
     # select training data and testing data
     numFolds = 5 # number of folds of data
     testIdx = 1 #index of testing data
-    iterNum = 2 # number of iterations
+    iterNum = 8 # number of iterations
  
     # data file path, and read
     categoryName = 'shopping'
     dataPath = "F:\\EECS545Proj\\Yelp_Dataset\\test_" + categoryName + "-TBD\\test_by_distance\\"    
     dataTerms = ['userID','itemID','subcategory','rating','time','userLocation','itemLocation','distance']
     now = datetime.datetime.now()        
-    resultPath = "F:\\EECS545Proj\\results\\" + str(now.strftime('%m%d%H%M')) + "\\"           
+    resultPath = "F:\\EECS545Proj\\results\\" + str(now.strftime('%m%d%H%M%S')) + "\\"           
     os.mkdir(resultPath)
     # read the raw data into pandas dataframe
     flag = 1
-    for i in range(1,3):
+    for i in range(1,6):
         dataFID = dataPath + 'data' + str(i) + '.txt'
         if i!= testIdx:
             if flag == 1:
@@ -83,9 +83,10 @@ if __name__ == "__main__":
                     U[j] = U[j] - step*Uu
                     P[k] = P[k] - step*Pi
                     error += res/numRating
+            print j
         iterTime = time.time() - startTime
         print "I have finished one iteration!"
-        print "the MAE for objective function is", error
+        print "the MSE for objective function is", float(np.sqrt(error))
         print "take", str(iterTime), "seconds"
         # save intermediate results
         recordCSV(P, resultPath + 'P%s.csv' %i) 
