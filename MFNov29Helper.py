@@ -33,6 +33,17 @@ def upUpdate(Uu,Pi,Rui,lambda1,lambda2):
     Pi = diff*Uu + lambda2*Pi
     res = diff**2
     return Uu,Pi,res
+
+# this is the gradient update function with r as the average score bias
+def rupUpdate(r,Uu,Pi,Rui,lambda1,lambda2):
+    Rui_hat = np.dot(Uu,Pi.T) + r
+    if abs(Rui_hat)>= 40:
+        print "overshoot! There must be something wrong with the gradient updating!"
+    diff = Rui_hat - Rui
+    Uu = diff*Pi + lambda1*Uu
+    Pi = diff*Uu + lambda2*Pi
+    res = diff**2
+    return Uu,Pi,res
     
 def recordCSV(matrix, FID):
     try:
@@ -55,7 +66,7 @@ def parallelUpdate(RUI,U,P,j,k,lambda1,lambda2,step,error,numRating,lock):
          Pi = res*U[j] + lambda2*P[k]
          U[j] = U[j] - step*Uu
          P[k] = P[k] - step*Pi
-<<<<<<< HEAD
+
          lock.release()
 
 def pUpdate(Ru,U,Pi,lambda2):
@@ -66,7 +77,6 @@ def pUpdate(Ru,U,Pi,lambda2):
     return Pi
     
     
-=======
          #lock.release()
 def recordCSV(matrix, FID):
     try:
@@ -77,7 +87,7 @@ def recordCSV(matrix, FID):
             print "written successful: FID ",FID
     except:
         print "cannot write file: FID ",FID
->>>>>>> 724b919e9cc27ec9b81ebe3dce3f2ade80f459ba
+
          
 
 

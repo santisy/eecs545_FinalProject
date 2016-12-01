@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Modified on Wed Nov 30, optimized version
+Modified on Wed Nov 30, optimized version, with rating bias
 Created on Mon Nov 28 20:40:58 2016
 Nov. 28 Basic PMF Main script
 
@@ -20,7 +20,7 @@ import os
 
 if __name__ == "__main__":
     # parameter initialization
-    featureDim = 20 # dimension of feature vector
+    featureDim = 10 # dimension of feature vector
     np.random.seed(0) # make controllable initialization
     lambdaU = 1 # lambda for user matrix regularization 0.6 0.8, feature dim 10?
     lambdaP = 1 # lambda for item matrix regularization
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # select training data and testing data
     numFolds = 5 # number of folds of data
     testIdx = 1 #index of testing data
-    iterNum = 50 # number of iterations
+    iterNum = 4 # number of iterations
  
     # data file path, and read
     categoryName = 'shopping'
@@ -63,6 +63,7 @@ if __name__ == "__main__":
     # training item ID generation
     itemList = pd.unique(trainContent['itemID']).tolist()
     itemNum = len(itemList)
+    ratingBias = trainContent['rating'].mean()# calculate rating bias
     # training rating matrix construction
     gc.enable()
     gc.collect()
@@ -90,7 +91,7 @@ if __name__ == "__main__":
                 RUI[j][k] != 0
             except:
                 print"RUI == 0, there must be something wrong"
-            (Uu,Pi,res) = upUpdate(U[j,np.newaxis],P[k,np.newaxis],RUI[j][k],lambdaU,lambdaP)
+            (Uu,Pi,res) = rupUpdate(ratingBias,U[j,np.newaxis],P[k,np.newaxis],RUI[j][k],lambdaU,lambdaP)
             U[j] = U[j] - step*Uu
             P[k] = P[k] - step*Pi
             error += res/numRating
@@ -98,9 +99,9 @@ if __name__ == "__main__":
             #    print count*100/numRating, "%", this is for monitoring speed
 
         iterTime = time.time() - startTime
-        print "I have finished one iteration!"
-        print "the RMSE for objective function is", float(np.sqrt(error))
-        print "take", str(iterTime), "seconds"
+        print str(i), "of", str(iterNum)," iterations has finished!"
+        print "the training error (RMSE) is", float(np.sqrt(error))
+        print "took", str(iterTime), "seconds"
         # save intermediate results
         
     numTest = testContent['userID'].count()
@@ -114,26 +115,25 @@ if __name__ == "__main__":
         try:
             U_hat = U[userList.index(row['userID']),np.newaxis]
             P_hat = P[itemList.index(row['itemID']),np.newaxis]
-            RUI_hat = float(np.dot(U_hat,P_hat.T))
+            RUI_hat = float(np.dot(U_hat,P_hat.T)) + ratingBias
             RMSE += ((testRUI - RUI_hat)**2)
             MAE += abs(testRUI - RUI_hat)
         except:
             numInvalid += 1
-            print "invalid testing data detected!"
-            
-        if count/1000 == 0:
-            print str((count/numTest)*100) + "%"
+
     RMSE = np.sqrt(RMSE/(numTest - numInvalid))
     MAE = MAE/(numTest - numInvalid)
     line1 = "Number of iterations: " + str(i)
     line2 = "RMSE for testing data: " + str(RMSE)
     line3 = "MAE for testing data: " + str(MAE)
+    line4 = "there are" + str(numInvalid) + " invalid data out of " + str(numTest) + " testing data"
     print line1
     print line2
     print line3
+    print line4
     resultLogFID = resultPath + "log.txt"
     f = open(resultLogFID, 'wb')
-    f.writelines([line1,'\n',line2,'\n',line3])
+    f.writelines([line1,'\n',line2,'\n',line3,'\n',line4])
     f.close()
     recordCSV(P, resultPath + 'P%s.csv' %i) 
     recordCSV(U, resultPath + 'U%s.csv' %i)  
