@@ -33,6 +33,16 @@ def upUpdate(Uu,Pi,Rui,lambda1,lambda2):
     res = diff**2
     return Uu,Pi,res
     
+def recordCSV(matrix, FID):
+    try:
+        with open(FID,'wb') as f:
+            writer = csv.writer(f)
+            writer.writerows(matrix)
+            f.close()
+            print "written successful: FID ",FID
+    except:
+        print "cannot write file: FID ",FID
+
 def parallelUpdate(RUI,U,P,j,k,lambda1,lambda2,step,error,numRating,lock):
      if RUI[j][k] != 0:
          Rui_hat = np.dot(U[j,np.newaxis],P[k,np.newaxis].T)
