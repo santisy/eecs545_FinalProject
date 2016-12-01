@@ -9,6 +9,7 @@ Created on Tue Nov 29 14:24:4 2016
 """
 # this function updates the uth row of user feature matrix U, for the vectorized gradient update
 import numpy as np
+import csv 
 def userGradientUpdate(RU, P, Uu, lambda1):
 
     RU_hat = np.dot(Uu,P)*np.sign(RU)
@@ -54,6 +55,7 @@ def parallelUpdate(RUI,U,P,j,k,lambda1,lambda2,step,error,numRating,lock):
          Pi = res*U[j] + lambda2*P[k]
          U[j] = U[j] - step*Uu
          P[k] = P[k] - step*Pi
+<<<<<<< HEAD
          lock.release()
 
 def pUpdate(Ru,U,Pi,lambda2):
@@ -64,6 +66,18 @@ def pUpdate(Ru,U,Pi,lambda2):
     return Pi
     
     
+=======
+         #lock.release()
+def recordCSV(matrix, FID):
+    try:
+        with open(FID,'wb') as f:
+            writer = csv.writer(f)
+            writer.writerows(matrix)
+            f.close()
+            print "written successful: FID ",FID
+    except:
+        print "cannot write file: FID ",FID
+>>>>>>> 724b919e9cc27ec9b81ebe3dce3f2ade80f459ba
          
 
 
