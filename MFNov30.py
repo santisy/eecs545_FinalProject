@@ -24,11 +24,13 @@ if __name__ == "__main__":
     np.random.seed(0) # make controllable initialization
     lambdaU = 1 # lambda for user matrix regularization 0.6 0.8, feature dim 10?
     lambdaP = 1 # lambda for item matrix regularization
+    lambdaBu = 1 # lambda for user bias
+    lambdaBi = 1 #lambda for item bias
     step = 0.0002 # iteration step 
     # select training data and testing data
     numFolds = 5 # number of folds of data
     testIdx = 1 #index of testing data
-    iterNum = 4 # number of iterations
+    iterNum = 40 # number of iterations
  
     # data file path, and read
     categoryName = 'shopping'
@@ -64,6 +66,7 @@ if __name__ == "__main__":
     itemList = pd.unique(trainContent['itemID']).tolist()
     itemNum = len(itemList)
     ratingBias = trainContent['rating'].mean()# calculate rating bias
+
     # training rating matrix construction
     gc.enable()
     gc.collect()
@@ -75,9 +78,14 @@ if __name__ == "__main__":
     iLst = RUI.nonzero()[1].tolist()
     numRating = len(uLst)
     ratingList = zip(uLst,iLst)
-    # U,P initialization
+    # U,P,BU,BI initialization
     U = np.random.randn(len(userList),featureDim)
     P = np.random.randn(len(itemList),featureDim)
+    # this remains to be discussed.
+    #BU = np.random.randn(userNum)
+    #BI = np.random.randn(itemNum)
+    BU = np.zeros([userNum,1])
+    BI = np.zeros([itemNum,1])
     # iteration
     gc.collect()
     for i in range(1,iterNum): #use a more rational way, update step by step 
@@ -91,9 +99,12 @@ if __name__ == "__main__":
                 RUI[j][k] != 0
             except:
                 print"RUI == 0, there must be something wrong"
-            (Uu,Pi,res) = rupUpdate(ratingBias,U[j,np.newaxis],P[k,np.newaxis],RUI[j][k],lambdaU,lambdaP)
+            # calculate gradient
+            (bu,bi,Uu,Pi,res) = biasedUpdate(BU[j],BI[k],ratingBias,U[j,np.newaxis],P[k,np.newaxis],RUI[j][k],lambdaU,lambdaP,lambdaBu,lambdaBi)
             U[j] = U[j] - step*Uu
             P[k] = P[k] - step*Pi
+            BU[j] = BU[j] - step*bu
+            BI[k] = BI[k] - step*bi
             error += res/numRating
             #if count/10000000000 == 0:
             #    print count*100/numRating, "%", this is for monitoring speed
@@ -115,7 +126,9 @@ if __name__ == "__main__":
         try:
             U_hat = U[userList.index(row['userID']),np.newaxis]
             P_hat = P[itemList.index(row['itemID']),np.newaxis]
-            RUI_hat = float(np.dot(U_hat,P_hat.T)) + ratingBias
+            bu_hat = BU[userList.index(row['userID'])]
+            bi_hat = BI[itemList.index(row['itemID'])]
+            RUI_hat = float(np.dot(U_hat,P_hat.T)) + ratingBias + bu_hat + bi_hat
             RMSE += ((testRUI - RUI_hat)**2)
             MAE += abs(testRUI - RUI_hat)
         except:

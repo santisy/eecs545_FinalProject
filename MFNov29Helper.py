@@ -45,6 +45,18 @@ def rupUpdate(r,Uu,Pi,Rui,lambda1,lambda2):
     res = diff**2
     return Uu,Pi,res
     
+    
+def biasedUpdate(bi,bu,r,Uu,Pi,Rui,lambda1,lambda2,lambda3,lambda4):
+    diff = Rui - r -bi - bu - np.dot(Uu,Pi.T)
+    if abs(diff)>=20:
+        print "overshoot! There must be something wrong with the gradient updating!"
+    Uu = -1*diff*Pi + lambda1*Uu
+    Pi = -1*diff*Uu + lambda2*Pi
+    bi = -1*diff*bi + lambda3*bi
+    bu = -1*diff*bu + lambda4*bu
+    res = diff**2
+    return float(bi),float(bu),Uu,Pi,res
+    
 def recordCSV(matrix, FID):
     try:
         with open(FID,'wb') as f:
