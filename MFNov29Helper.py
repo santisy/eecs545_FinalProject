@@ -55,17 +55,8 @@ def biasedUpdate(bi,bu,r,Uu,Pi,Rui,lambda1,lambda2,lambda3,lambda4):
     bi = -1*diff*bi + lambda3*bi
     bu = -1*diff*bu + lambda4*bu
     res = diff**2
-    return float(bi),float(bu),Uu,Pi,res
+    return float(bi),float(bu),Uu,Pi,float(res)
     
-def recordCSV(matrix, FID):
-    try:
-        with open(FID,'wb') as f:
-            writer = csv.writer(f)
-            writer.writerows(matrix)
-            f.close()
-            print "written successful: FID ",FID
-    except:
-        print "cannot write file: FID ",FID
 
 def parallelUpdate(RUI,U,P,j,k,lambda1,lambda2,step,error,numRating,lock):
      if RUI[j][k] != 0:
@@ -92,13 +83,26 @@ def pUpdate(Ru,U,Pi,lambda2):
          #lock.release()
 def recordCSV(matrix, FID):
     try:
+        matrix.shape[1]
         with open(FID,'wb') as f:
             writer = csv.writer(f)
             writer.writerows(matrix)
             f.close()
             print "written successful: FID ",FID
+            return
     except:
-        print "cannot write file: FID ",FID
+        with open(FID,'wb') as f:
+            writer = csv.writer(f)
+            writer.writerow(matrix)
+            f.close()
+            print "written successful: FID ",FID
+            return
+    print "file not written due to unknown errors"
+    
+def distanceBias(coe,distance): # used for bias with distance
+    return float(np.polyval(coe,distance))
+        
+        
 
          
 
