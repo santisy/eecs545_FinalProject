@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Social constrained version of PMF in Yelp dataset
-至少试一下，或者用constrained MF
-Modified on Mon Nov 28
+Socially constrained version of PMF in Yelp dataset
+Modified on Mon Dec. 05
 Modified on Sat Nov. 30
 Demenstrating that PMF can easily be extended with prior knowledges and constrains or bias
 Modified on Wed Nov 30, optimized version, with rating bias
@@ -40,7 +39,7 @@ if __name__ == "__main__":
     maxIterNum = 300 # conrolling number of iterations
         
     # data file path, and read
-    mode = 1 # 1 for debugging, SUV and RUI are directly read from saved file 
+    mode = 0 # 1 for debugging, SUV and RUI are directly read from saved file 
     categoryName = 'shopping'
     method = "PMF Socially Constrained"
     dataset = "Yelp-shopping"
