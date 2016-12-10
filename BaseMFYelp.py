@@ -22,8 +22,8 @@ if __name__ == "__main__":
     # parameter initialization
     featureDim = 10 # dimension of feature vector
     np.random.seed(0) # make controllable initialization
-    lambdaU = 0.001 # lambda for user matrix regularization 0.6 0.8, feature dim 10?
-    lambdaP = 0.0001 # lambda for item matrix regularization
+    lambdaU = 1 # lambda for user matrix regularization 0.6 0.8, feature dim 10?
+    lambdaP = 1 # lambda for item matrix regularization
     step = 0.0004 # iteration step 
     # select training data and testing data
     numFolds = 5 # number of folds of data
