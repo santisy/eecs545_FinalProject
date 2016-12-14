@@ -24,7 +24,8 @@ for i = 1:5
 end
 
 allData = [trainMatrix;testMatrix];
-[numData,~] = size([allData]);
+[numData,~] = size(allData);
+% the former three columns to do the process
 trainMatrix = trainMatrix(:,1:3);
 testMatrix = testMatrix(:,1:3);
 allData = allData(:,1:3);
