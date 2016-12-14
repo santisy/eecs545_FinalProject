@@ -3,12 +3,12 @@
 % Modified using SGD
 clear
 clc
-load movielens1_10
+load epinion
 
 % paramter initialization
 % step = 0.001;
-NUM_USER = 6040;
-NUM_MOVIE = 3952;
+NUM_USER = 22166;
+NUM_MOVIE = 296277
 
 
 
@@ -16,7 +16,7 @@ lambdaU  = 0.01 % Regularization parameter
 lambdaP = 0.01
 featureDim = 8
 testIdx = 1
-maxIterNum = 500;
+maxIterNum = 50;
 numBatch = 10; % number of batches
 % split training set and test set
 gamma = 0.8; % coefficient for velocity
@@ -25,9 +25,9 @@ trainMatrix = [];
 testMatrix = [];
 for i = 1:5
     if i == testIdx
-        testMatrix = movieLens1_10{i};
+        testMatrix = rating{i};
     else
-        trainMatrix = [trainMatrix;movieLens1_10{i}];
+        trainMatrix = [trainMatrix;rating{i}];
     end
 end
 
@@ -99,6 +99,7 @@ for currentIter = 1:maxIterNum
     userTestID = double(testMatrix(:,1));
     movieTestID = double(testMatrix(:,2));
     ratingTest = double(testMatrix(:,3));
+    %testPrediction = sum(P(movieTestID,:).*U(userTestID,:),2)+ratingMean;
     testPrediction = sum(P(movieTestID,:).*U(userTestID,:),2)+ratingMean;
 
     testPrediction(find(testPrediction>5)) = 5; 
