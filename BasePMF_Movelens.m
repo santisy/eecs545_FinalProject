@@ -36,6 +36,7 @@ numUser = 6040;
 numMovie = 3952;
 
 % feature initializtion
+% ## NOTE: the 0.1, the initialization convention
 P = 0.1*randn(numMovie, featureDim); % Movie feature vectors
 U = 0.1*randn(numUser, featureDim); % User feature vecators
 
