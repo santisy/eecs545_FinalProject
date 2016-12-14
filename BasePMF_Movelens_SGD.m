@@ -1,8 +1,8 @@
 
 % Base PMF
 % Modified using SGD
-% clear
-% clc
+clear
+clc
 load movielensFull
  
 % paramter initialization
@@ -12,11 +12,11 @@ NUM_MOVIE = 3952;
 
 
 
-lambdaU  = 0.001; % Regularization parameter  
-lambdaP = 0.001;
-featureDim = 10;
-testIdx = 1;
-maxIterNum = 200;
+lambdaU  = 0.001 % Regularization parameter  
+lambdaP = 0.001
+featureDim = 3
+testIdx = 3
+maxIterNum = 200
 numBatch = 10; % number of batches
 % split training set and test set
 gamma = 0.8; % coefficient for velocity
@@ -60,7 +60,7 @@ MAEList = [];
 
 % SGD iteration
 for currentIter = 1:maxIterNum
-    updateIdx = randperm(numTrainSample);
+    updateIdx = randperm(numTrain);
     for batch = 1:numBatch
     
         userSampleID = double(trainMatrix(batchSize*(batch-1)+1:batchSize*batch,1));
