@@ -13,34 +13,41 @@
 % application.  All use of these programs is entirely at the user's own risk.
 
 %???????????????????MATLAB???.mat?????????
+clc,clear
+close all
 restart = 1;
 rand('state',0); 
 randn('state',0); 
 
 if restart==1 
   restart=0;
-  epsilon=50; % Learning rate 
+  epsilon=1; % Learning rate,default is 50
   lambda  = 0.01; % Regularization parameter 
   momentum=0.8; 
 
   epoch=1; 
-  maxepoch=50; 
+  maxepoch=100; 
 
   load moviedata % Triplets: {user_id, movie_id, rating} 
   mean_rating = mean(train_vec(:,3)); %???????
  
   pairs_tr = length(train_vec); % training data ;900000
-  pairs_pr = length(probe_vec); % validation data ;100209
+  pairs_pr = length(probe_vec); % validation data ;100203
 
   numbatches= 9; % Number of batches  
   num_m = 3952;  % Number of movies 
   num_p = 6040;  % Number of users 
-  num_feat = 10; % Rank 10 decomposition 
+  num_feat = 10; % Rank 10 decomposition
+                 % the feature dim here
 
   w1_M1     = 0.1*randn(num_m, num_feat); % Movie feature vectors
   w1_P1     = 0.1*randn(num_p, num_feat); % User feature vecators
   w1_M1_inc = zeros(num_m, num_feat);
   w1_P1_inc = zeros(num_p, num_feat);
+  
+  aa_ma = train_vec(:,2);
+  aa_pa = train_vec(:,1);
+  ratings_a = train_vec(:,3);
 
 end
 
@@ -101,6 +108,7 @@ for epoch = epoch:maxepoch
   %%% Compute predictions on the validation set %%%%%%%%%%%%%%%%%%%%%% 
   NN=pairs_pr; %???????
 
+  
   aa_p = double(probe_vec(:,1));
   aa_m = double(probe_vec(:,2));
   rating = double(probe_vec(:,3));
@@ -113,6 +121,20 @@ for epoch = epoch:maxepoch
   err_valid = sqrt(sum((pred_out- rating).^2)/NN);
   fprintf(1, 'epoch %4i batch %4i Training RMSE %6.4f  Test RMSE %6.4f  \n', ...
               epoch, batch, err_train(epoch), err_valid);
+          
+  %% update the lambda: the hyperparameter
+
+  sigma(epoch) = sqrt(sum((ratings_a-sum(w1_M1(aa_ma,:).*w1_P1(aa_pa,:),2)).^2/(9*N)));
+
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 end 
 
+%   sigmaU = sqrt((sum(sum(w1_M1.*w1_M1)) + sum(sum(w1_P1.*w1_P1)))/...
+%             (num_p*num_feat+num_m*num_feat));
+%   sigma = sqrt(sum((ratings_a-sum(w1_M1(aa_ma,:).*w1_P1(aa_pa,:),2)).^2/(9*N)));
+%   
+%   lambda = (sigma/sigmaU)^2;
+subplot 121
+plot(err_train,'b-+','LineWidth',2)
+subplot 122
+plot(sigma,'b-+','LineWidth',2)
